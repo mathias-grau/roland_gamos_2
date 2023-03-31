@@ -11,7 +11,7 @@ from channels.layers import get_channel_layer
 from django.core import serializers
 from .models import Room, Message
 
-#accueil
+
 @login_required
 def rooms(request):
     rooms = Room.objects.all()
