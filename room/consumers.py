@@ -32,8 +32,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = data['message']
         username = data['username']
         room = data['room']
+        current_artist = data['current_artist']
+        
+        
 
         await self.save_message(username, room, message)
+        await self.update_current_artist(room, message)
 
         # Send message to room group
         await self.channel_layer.group_send(
@@ -41,7 +45,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 'type': 'chat_message',
                 'message': message,
-                'username': username
+                'username': username,
+                'current_artist': message,
             }
         )
 
@@ -61,3 +66,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         user = User.objects.get(username=username)
         room = Room.objects.get(slug=room)
         Message.objects.create(user=user, room=room, content=message)
+        
+    @sync_to_async
+    def update_current_artist(self, room, current_artist):
+        room = Room.objects.get(slug=room)
+        room.current_artist = current_artist
+        print("New current artist",room.current_artist)
+        room.save()
