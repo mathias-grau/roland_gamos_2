@@ -22,36 +22,16 @@ def rooms(request):
 @login_required
 def room(request, room_id):
     room = get_object_or_404(Room, id=room_id)
-    print("ok")
-    print(room)
-    messages = Message.objects.filter(room=room).order_by('-date_added')[:5]
+    print('room', room)
+    messages = Message.objects.filter(room=room).order_by('date_added').reverse()[:5][::-1]
     username = request.user.username
 
-    if request.method == 'POST':
-        content = request.POST.get('content')
-        print(content)
-        print(username)
-
-        if content and username:
-            Message.objects.create(
-                content=content,
-                user=request.user,
-                room=room
-            )
-            print('message created')
-            messages = Message.objects.filter(room=room).order_by('-date_added')[:5]
-            return render(request, 'room/room.html', {
-                'room': room,
-                'messages': messages,
-                'username' : username,
-            })
 
     return render(request, 'room/room.html', {
         'room': room,
         'messages': messages,
         'username': username,
     })
-
 @login_required
 def createroom(request):
     if request.method == "POST" :
@@ -62,24 +42,23 @@ def createroom(request):
             
             room = Room.objects.create(name=name, 
                                        slug=slug)
+            print("room created",room)
             return render(request, 'room/room.html', {'room': room, 'messages': ''})
         
         else : 
             errors= test_room_exists(request)
             print(errors)
             return render(request, 'room/createroom.html',{'errors': errors})
+    return render(request, 'room/createroom.html',{})
 
 
 def test_room_exists(request):
     name = request.POST.get('roomname',None)
     if name == None:
-        print( "name is none")
         return "Name is none"
     slug = ''.join(filter(str.isalpha, name))
     if Room.objects.filter(slug=slug).exists():
-        print("room  {} exists".format(slug))
         return "Room already exists"
-    print("room does not exist")
     return False 
 
 @login_required

@@ -28,7 +28,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     # Receive message from WebSocket
     async def receive(self, text_data):
         data = json.loads(text_data)
-        print(data)
+        print('data', data)
         message = data['message']
         username = data['username']
         room = data['room']
@@ -60,6 +60,4 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def save_message(self, username, room, message):
         user = User.objects.get(username=username)
         room = Room.objects.get(slug=room)
-        
-
         Message.objects.create(user=user, room=room, content=message)
