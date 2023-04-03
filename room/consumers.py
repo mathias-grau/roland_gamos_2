@@ -5,6 +5,10 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 
 from .models import Room, Message
+import requests
+
+# Set the base URL for the MusicBrainz API
+base_url = "http://musicbrainz.org/ws/2/"
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -34,10 +38,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         room = data['room']
         current_artist = data['current_artist']
         
+        test = await self.test_artist(message,current_artist)
         
-
-        await self.save_message(username, room, message)
-        await self.update_current_artist(room, message)
+        if test['status'] == 1:
+            await self.save_message(username, room, message)
+            await self.update_current_artist(room, message)
+            current_artist = message
 
         # Send message to room group
         await self.channel_layer.group_send(
@@ -46,7 +52,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'type': 'chat_message',
                 'message': message,
                 'username': username,
-                'current_artist': message,
+                'current_artist': current_artist,
             }
         )
 
@@ -75,3 +81,43 @@ class ChatConsumer(AsyncWebsocketConsumer):
         room.current_artist = current_artist
         print("New current artist",room.current_artist)
         room.save()
+        
+    @sync_to_async
+    def test_artist(self,message,current_artist):
+        artist_1=message
+        artist_2=current_artist
+        
+        context = {}
+    
+    
+        # Set the parameters for the API request
+        params = {
+        "query":  f"artist:{artist_1} AND artist:{artist_2}",
+        "fmt": "json",
+        }
+
+        # Make the API request
+        response = requests.get(base_url + "recording", params=params)
+    
+        if response.status_code == 200:
+            # If the request was successful, parse the JSON response
+            data = response.json()
+            
+            
+            if len(data["recordings"]) > 0:
+                title = data["recordings"][0]['title']
+                # If there were releases returned, that means the two artists have collaborated
+                context['current_artist']=  artist_1
+                context['status']= 1
+                return context
+                
+            else:
+                context['current_artist']=  artist_1
+                context['status']= 2
+                return context
+        else:
+            context['current_artist']=  artist_1
+            context['status']= 3
+            #connection issue
+            return context
+        
