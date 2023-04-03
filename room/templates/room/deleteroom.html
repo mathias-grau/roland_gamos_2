@@ -1,0 +1,23 @@
+{% extends 'core/base.html' %}
+
+{% block title %} Delete Room | {% endblock %}
+
+{% block content %}
+<div class="p-10 lg:p-20 text-center">
+    <h1 class="text-3xl lg:text-6xl text-white">Delete Room</h1>
+</div>
+
+
+
+<div class="lg:w-2/4 mt-6 mx-4 lg:mx-auto p-4 bg-white rounded-xl">
+    <form action="{% url 'deleteroom' room.id %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+            Delete Room
+        </button>
+    </form>
+    
+    
+</div>
+{% endblock %}
+
