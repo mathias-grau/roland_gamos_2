@@ -38,12 +38,17 @@ def createroom(request):
         name = request.POST.get('roomname')
         print("trying to create room",name)
         slug = ''.join(filter(str.isalpha, name))
+        current_artist = "Angèle"
         if test_room_exists(request)== False:
             
             room = Room.objects.create(name=name, 
-                                       slug=slug)
+                                       slug=slug,
+                                       current_artist = current_artist,
+                                       )
             print("room created",room)
-            return render(request, 'room/room.html', {'room': room, 'messages': ''})
+            return render(request, 'room/room.html', {'room': room, 
+                                                      'messages': '',
+                                                      })
         
         else : 
             errors= test_room_exists(request)
