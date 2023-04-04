@@ -37,6 +37,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         username = data['username']
         room = data['room']
         current_artist = data['current_artist']
+        print("The current artist return by data is ",current_artist)
         
         test = await self.test_artist(message,current_artist)
         
@@ -54,7 +55,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'username': username,
                 'current_artist': current_artist,
             }
+        
         )
+        print("The current artist is",current_artist)
 
     # Receive message from room group
     async def chat_message(self, event):

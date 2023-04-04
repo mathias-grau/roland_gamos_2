@@ -60,7 +60,8 @@
     const roomName = JSON.parse(document.getElementById('json-roomname').textContent);
     const userName = JSON.parse(document.getElementById('json-username').textContent);
     const roomId = JSON.parse(document.getElementById('json-roomid').textContent);
-    const currentArtist = JSON.parse(document.getElementById('json-roomcurrentartist').textContent);
+    let currentArtist = JSON.parse(document.getElementById('json-roomcurrentartist').textContent);
+    let current_artist_balise = document.querySelector('#current-artist') ;
     
    
     const chatSocket = new WebSocket(
@@ -96,8 +97,10 @@
             
             scrollToBottom();
         };
+        currentArtist = data.current_artist;
+        console.log('current artist', currentArtist);
 
-        const current_artist = document.querySelector('#current-artist');
+        current_artist = document.querySelector('#current-artist');
         current_artist.innerHTML = ('<h3 class="text-2xl lg:text-3xl">' + data.current_artist + '</h3>');
     };
 
