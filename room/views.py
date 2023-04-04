@@ -27,11 +27,10 @@ def room(request, room_id):
     username = request.user.username
 
 
-    return render(request, 'room/room.html', {
-        'room': room,
-        'messages': messages,
-        'username': username,
-    })
+    return render(request, 'room/room.html', {'room': room,
+                                              'messages': messages,
+                                              'username': username,
+                                              })
 @login_required
 def createroom(request):
     if request.method == "POST" :
@@ -46,9 +45,7 @@ def createroom(request):
                                        current_artist = current_artist,
                                        )
             print("room created",room)
-            return render(request, 'room/room.html', {'room': room, 
-                                                      'messages': '',
-                                                      })
+            return redirect("room",room.id)
         
         else : 
             errors= test_room_exists(request)
