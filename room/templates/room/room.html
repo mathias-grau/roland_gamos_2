@@ -10,13 +10,17 @@
     <div class="bg-teal-800 lg:w-1/3 px-2 py-2 rounded-xl text-white inline-block">
         <h1 class="text-2xl lg:text-3xl">{{ room.name }}</h1>
         <h2 class="text-sm lg:text-base text-black"> Identifiant : {{ room.id }}</h2>
-
     </div>
 </div>
 
 <div class="p-5 lg:p-3 text-center">
-    <div class="bg-teal-800 lg:w-1/4 px-4 py-2 rounded-xl text-white inline-block" id="current-artist">
+    <div class="bg-teal-800 lg:w-1/3 px-4 py-2 rounded-xl text-white inline-block" id="current-artist">
         <h3 class="text-2xl lg:text-3xl">{{ room.current_artist }}</h3>
+        
+        {% if room.previous_artist is not None %}
+            <h4 class="text-sm lg:text-base text-black"> Last featuring : {{ room.previous_artist }} with  "{{ room.title }}" </h4>
+        {% endif %}
+
     </div>
 </div>
 
@@ -55,12 +59,16 @@
 {{ request.user.username|json_script:"json-username" }}
 {{ room.id|json_script:"json-roomid" }}
 {{ room.current_artist|json_script:"json-roomcurrentartist"}}
+{{ room.previous_artist|json_script:"json-roompreviousartist"}}
+{{ room.title|json_script:"json-roomtitle"}}
 
 <script>
     const roomName = JSON.parse(document.getElementById('json-roomname').textContent);
     const userName = JSON.parse(document.getElementById('json-username').textContent);
     const roomId = JSON.parse(document.getElementById('json-roomid').textContent);
     let currentArtist = JSON.parse(document.getElementById('json-roomcurrentartist').textContent);
+    let previousArtist = JSON.parse(document.getElementById('json-roompreviousartist').textContent);
+    let title = JSON.parse(document.getElementById('json-roomtitle').textContent);
     let current_artist_balise = document.querySelector('#current-artist') ;
     
    
@@ -98,10 +106,24 @@
             scrollToBottom();
         };
         currentArtist = data.current_artist;
+        previousArtist = data.previous_artist;
+        title = data.title;
         console.log('Current artist after receiving', currentArtist);
+        console.log('Previous artist after receiving', previousArtist);
+        console.log('Title after receiving', title);
 
         current_artist = document.querySelector('#current-artist');
-        current_artist.innerHTML = ('<h3 class="text-2xl lg:text-3xl">' + data.current_artist + '</h3>');
+        current_artist.innerHTML = (
+            '<div>' +
+                '<h3 class="text-2xl lg:text-3xl">' + data.current_artist + '</h3>' +
+                (data.previous_artist !== null ?
+                '<h4 class="text-sm lg:text-base text-black">Last featuring : ' + data.previous_artist + ' with "' + data.title + '"</h4>' :
+                ''
+                ) +
+            '</div>'
+            );
+
+
     };
 
     
@@ -128,11 +150,15 @@
 
         console.log('Sending message:', message);
         console.log('Current artist before sending ', currentArtist);
+        console.log('Previous artist before sending ', previousArtist);
+        console.log('Title before sending ', title);
         chatSocket.send(JSON.stringify({
             'message': message,
             'username': userName,
             'room': roomName,
             'current_artist': currentArtist,
+            'previous_artist': previousArtist,
+            'title': title,
         }));
 
        
