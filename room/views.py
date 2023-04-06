@@ -43,6 +43,7 @@ def createroom(request):
             room = Room.objects.create(name=name, 
                                        slug=slug,
                                        current_artist = current_artist,
+    
                                        )
             print("room created",room)
             return redirect("room",room.id)
