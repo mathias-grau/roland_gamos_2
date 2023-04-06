@@ -1,9 +1,13 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Welcome | {% endblock %}
+{% block title %}Roland Gamos | {% endblock %}
 
 {% block content %}
 <div class="p-10 lg:p-20 text-center">
     <h1 class="text-3xl lg:text-6xl text-white">Roland Gamos</h1>
+    <a href="{% url 'rooms' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-5 inline-block block">Play game</a>
+    <br>
+    <a href="{% url 'rules' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-5 inline-block block">Rules</a>
 </div>
+
 {% endblock %}

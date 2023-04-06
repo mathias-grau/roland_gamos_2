@@ -20,3 +20,6 @@ def signup(request):
         form = SignUpForm()
     
     return render(request, 'core/signup.html', {'form': form})
+
+def rules(request):
+    return render(request, 'core/rules.html')
